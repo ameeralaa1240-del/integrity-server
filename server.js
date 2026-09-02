@@ -3,18 +3,22 @@ const app = express();
 
 app.use(express.json());
 
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    if (req.method === 'OPTIONS') {
-        return res.sendStatus(200);
-    }
-    next();
-});
+const PORT = process.env.PORT || 8080;
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN;
 
-const ADMIN_TOKEN = "medo123";
-const PORT = process.env.PORT ||  8080;
+if (!ADMIN_TOKEN) {
+    console.error("❌ ADMIN_TOKEN is missing");
+    process.exit(1);
+}
+
+function checkAuth(req) {
+    const auth = req.headers.authorization;
+
+    return (
+        auth === ADMIN_TOKEN ||
+        auth === `Bearer ${ADMIN_TOKEN}`
+    );
+}
 
 let data = {
     username: "في انتظار البيانات",
@@ -28,63 +32,63 @@ let data = {
     is_vm: false
 };
 
-function checkAuth(req) {
-    const auth = req.headers.authorization;
-    return auth === ADMIN_TOKEN || auth === `Bearer ${ADMIN_TOKEN}`;
-}
-
 app.post("/api/system-info", (req, res) => {
-    console.log("📥 POST /api/system-info");
     if (!checkAuth(req)) {
-        return res.status(401).json({ error: "Unauthorized" });
+        return res.status(401).json({
+            success: false,
+            error: "Unauthorized"
+        });
     }
-    try {
-        data = {
-            ...req.body,
-            received_at: new Date().toISOString()
-        };
-        console.log("✅ تم الاستقبال");
-        res.json({ success: true, data });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+
+    data = {
+        ...req.body,
+        received_at: new Date().toISOString()
+    };
+
+    res.json({
+        success: true,
+        data
+    });
 });
 
 app.get("/api/system-info", (req, res) => {
-    console.log("📤 GET /api/system-info");
     res.json(data);
 });
 
 app.delete("/api/system-info", (req, res) => {
     if (!checkAuth(req)) {
-        return res.status(401).json({ error: "Unauthorized" });
+        return res.status(401).json({
+            success: false,
+            error: "Unauthorized"
+        });
     }
-    data = { username: "تم المسح" };
+
+    data = {
+        username: "تم المسح"
+    };
+
     res.json({ success: true });
 });
 
 app.get("/", (req, res) => {
     res.send(`
         <h1>🚀 Integrity Server</h1>
-        <p>✅ السيرفر شغال!</p>
-        <ul>
-            <li><a href="/api/system-info">📡 API</a></li>
-            <li><a href="/test">🧪 Test</a></li>
-        </ul>
-        <p>🔑 Token: <code>medo123</code></p>
+        <p>Server is running!</p>
+        <a href="/test">Test API</a>
     `);
 });
 
 app.get("/test", (req, res) => {
-    res.json({ 
-        status: "ok", 
-        message: "السيرفر يعمل! 🚀",
+    res.json({
+        status: "ok",
         time: new Date().toISOString()
     });
 });
 
-app.listen(PORT, "0.0.0.0", () => {
-    console.log(`✅ Server running on port ${PORT}`);
-    console.log(`📡 /api/system-info`);
-    console.log(`🧪 /test`);
+const server = app.listen(PORT, "0.0.0.0", () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+});
+
+server.on("error", (err) => {
+    console.error("❌ Server error:", err);
 });
