@@ -14,7 +14,7 @@ app.use((req, res, next) => {
 });
 
 const ADMIN_TOKEN = "medo123";
-const PORT = process.env.PORT || 10000;
+const PORT = process.env.PORT ||  8080;
 
 let data = {
     username: "في انتظار البيانات",
