@@ -3,7 +3,7 @@ const path = require("path");
 
 const app = express();
 
-// ===== CORS يدوي =====
+// ===== CORS =====
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -42,7 +42,7 @@ const checkAuth = (req) => {
 };
 
 // ============================================================
-// ====== مسارات معلومات النظام ======
+// ====== مسارات API ======
 // ============================================================
 
 app.post("/api/system-info", (req, res) => {
@@ -105,7 +105,7 @@ app.get("/system-info", (req, res) => {
     res.sendFile(path.join(__dirname, "system-info.html"));
 });
 
-app.get("/admin.html", (req, res) => {
+app.get("/admin", (req, res) => {
     res.sendFile(path.join(__dirname, "admin.html"));
 });
 
@@ -129,7 +129,6 @@ app.get("/", (req, res) => {
                 a { color: #00e676; text-decoration: none; }
                 a:hover { text-decoration: underline; }
                 .box { background: #1a1a2e; padding: 20px; border-radius: 10px; margin: 10px 0; }
-                .status { color: #00e676; }
                 code { background: #333; padding: 2px 8px; border-radius: 4px; }
             </style>
         </head>
@@ -139,15 +138,14 @@ app.get("/", (req, res) => {
                 <h3>📊 الروابط المتاحة:</h3>
                 <ul>
                     <li><a href="/system-info">📊 معلومات النظام</a></li>
-                    <li><a href="/api/system-info">📡 API - معلومات النظام</a></li>
-                    <li><a href="/test">🧪 اختبار السيرفر</a></li>
-                    <li><a href="/admin.html">🔐 لوحة التحكم</a></li>
+                    <li><a href="/api/system-info">📡 API</a></li>
+                    <li><a href="/test">🧪 اختبار</a></li>
+                    <li><a href="/admin">🔐 لوحة التحكم</a></li>
                 </ul>
             </div>
             <div class="box">
                 <p>✅ السيرفر يعمل 🚀</p>
                 <p>🔑 التوكن: <code>medo123</code></p>
-                <p>📦 الإصدار: v1.0.0</p>
             </div>
         </body>
         </html>
@@ -162,5 +160,5 @@ app.listen(PORT, "0.0.0.0", () => {
     console.log(`📊 /system-info`);
     console.log(`📡 /api/system-info`);
     console.log(`🧪 /test`);
-    console.log(`🔐 /admin.html\n`);
+    console.log(`🔐 /admin\n`);
 });
