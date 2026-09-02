@@ -1,4 +1,4 @@
-cat > package.json << 'EOF'
+
 {
   "name": "integrity-server",
   "version": "1.0.0",
@@ -10,4 +10,4 @@ cat > package.json << 'EOF'
     "express": "^4.18.2"
   }
 }
-EOF
+
